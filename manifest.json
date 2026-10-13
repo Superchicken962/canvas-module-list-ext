@@ -1,0 +1,15 @@
+{
+    "name": "Canvas Module List",
+    "description": "Shows list of modules on the left toolbar of each course on Canvas",
+    "version": "0.1",
+    "manifest_version": 3,
+    "action": {
+        "default_popup": "credits.html"
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["utility.js", "index.js"]
+        }
+    ]
+}
