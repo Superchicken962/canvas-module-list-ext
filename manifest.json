@@ -9,7 +9,8 @@
     "content_scripts": [
         {
             "matches": ["<all_urls>"],
-            "js": ["utility.js", "index.js"]
+            "js": ["scripts/utility.js", "scripts/index.js"],
+            "css": ["styling/overrides.css"]
         }
     ]
 }

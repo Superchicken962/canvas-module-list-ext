@@ -42,3 +42,8 @@ function initModules(forceRedirect = true) {
 }
 
 initModules();
+
+// Add class name to target with css - so we target it on canvas only.
+if (isCanvasSite()) {
+    document.querySelector("body").classList.add("canvasPage");
+}

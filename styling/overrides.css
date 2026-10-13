@@ -1,0 +1,30 @@
+
+@media (min-width: 768px) {
+    body.canvasPage.course-menu-expanded:not(.ic-no-flex-layout):not(.embedded):not(.is-inside-submission-frame):not(.content-only) .ic-Layout-columns {
+        margin-left: 230px !important;
+    }
+
+    body.canvasPage .ic-app-course-menu {
+        width: 230px !important;
+    }
+}
+
+@media (min-width: 1440px) {
+    body.canvasPage.course-menu-expanded:not(.ic-no-flex-layout):not(.embedded):not(.is-inside-submission-frame):not(.content-only) .ic-Layout-columns {
+        margin-left: 350px !important;
+    }
+
+    body.canvasPage .ic-app-course-menu {
+        width: 350px !important;
+    }
+}
+
+@media (min-width: 1600px) {
+    body.canvasPage.course-menu-expanded:not(.ic-no-flex-layout):not(.embedded):not(.is-inside-submission-frame):not(.content-only) .ic-Layout-columns {
+        margin-left: 410px !important;
+    }
+
+    body.canvasPage .ic-app-course-menu {
+        width: 410px !important;
+    }
+}
