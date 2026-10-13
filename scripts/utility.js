@@ -181,3 +181,7 @@ function saveModulesForCourse(courseId, modules) {
 function isCanvasSite() {
     return !!localStorage.getItem("canvas_host");
 }
+
+// TODO: 
+// - Check for any course updates when visiting course page - right now it probably will just keep current data.
+// - Perhaps make module sections collapsable - click the heading to toggle collapse. Canvas already uses localStorage for storing it's collapsible, so maybe it could tie into that?
