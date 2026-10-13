@@ -14,11 +14,11 @@
  */
 
 /**
- * Scrape modules from list on course modules page.
+ * Scrape modules from list on course modules page. Must be done from modules page.
  * 
  * @returns { Module[] }
  */
-function getCourseModules() {
+function scrapeCourseModules() {
     const modules = {};
     const moduleEls = document.querySelectorAll(".context_module");
 
@@ -111,6 +111,7 @@ function addToPage(modules) {
 
     for (const mod of modules) {
         const modEl = createLink(mod.title, null, 1);
+        modEl.style.fontWeight = "bold";
         // Append to last module, then set this one as the last.
         lastModule.after(modEl);
         lastModule = modEl;
@@ -124,9 +125,10 @@ function addToPage(modules) {
             lastModule.after(itemEl);
             lastModule = itemEl;
 
+            // Make sub items intended one level further.
             if (item.isSubHeader) {
-                console.log("sub header", item.title);
                 indentAt = 3;
+                itemEl.style.fontWeight = "bold";
             }
         }
     }
@@ -137,4 +139,36 @@ function addToPage(modules) {
  */
 function removeModuleItems() {
     document.querySelectorAll(".customModuleItem").forEach(e => e.remove());
+}
+
+/**
+ * Get course modules for a given course. Searches localStorage, if not found, scrapes them. Must be on modules page to scrape!
+ * 
+ * @param { String } courseId 
+ */
+function getModulesForCourse(courseId) {
+    try {
+        const saved = JSON.parse(localStorage.getItem("courseModules"));
+        if (!saved) return [];
+
+        return saved[courseId] || [];
+    } catch {
+        return [];
+    }
+}
+
+/**
+ * Save course modules to localStorage.
+ * 
+ * @param { String } courseId
+ * @param { Module[] } modules 
+ */
+function saveModulesForCourse(courseId, modules) {
+    try {
+        const saved = JSON.parse(localStorage.getItem("courseModules")) || {};
+        saved[courseId] = modules;
+        console.log(saved);
+
+        localStorage.setItem("courseModules", JSON.stringify(saved));
+    } catch {}
 }
