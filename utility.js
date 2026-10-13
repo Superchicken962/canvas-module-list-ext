@@ -81,5 +81,60 @@ function getCourseModules() {
  * @param { Module[] } modules 
  */
 function addToPage(modules) {
-    
+    const modulesLink = document.querySelector("#modules-link");
+    if (!modulesLink) return;
+
+    const baseClone = modulesLink.cloneNode(true);
+
+    /**
+     * Create link element.
+     * 
+     * @param { String } name Name / titlee
+     * @param { String } url - Url / href
+     * @param { Number } indentLevel - Level of indent - >1 increments margin-left by 15px
+     * @returns { HTMLElement }
+     */
+    const createLink = (name, url, indentLevel = 0) => {
+        const el = baseClone.cloneNode(true);
+        el.classList.remove("active");
+        el.classList.add("customModuleItem");
+        el.style.marginLeft = `${indentLevel * 15}px`;
+
+        el.textContent = name;
+        el.href = url ?? "#";
+
+        return el;
+    }
+
+    // Keep track of the 'last module' element so we can add on as we go down the list.
+    let lastModule = modulesLink;
+
+    for (const mod of modules) {
+        const modEl = createLink(mod.title, null, 1);
+        // Append to last module, then set this one as the last.
+        lastModule.after(modEl);
+        lastModule = modEl;
+
+        // Indent is 2 for normal items, and 3 for ones with sub heading.
+        let indentAt = 2;
+        for (const item of mod.items) {
+            if (!item.subHeader) indentAt = 2;
+            
+            const itemEl = createLink(item.title, item.url, indentAt);
+            lastModule.after(itemEl);
+            lastModule = itemEl;
+
+            if (item.isSubHeader) {
+                console.log("sub header", item.title);
+                indentAt = 3;
+            }
+        }
+    }
+}
+
+/**
+ * Remove all module items that was added by this.
+ */
+function removeModuleItems() {
+    document.querySelectorAll(".customModuleItem").forEach(e => e.remove());
 }
