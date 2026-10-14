@@ -145,6 +145,21 @@ function addToPage(modules) {
             }
         }
     }
+
+    (async() => {
+        let sideBar = getSideBar();
+        let tries = 0;
+
+        // Get side bar until it is either found, or it has been about 2-3s of nothing.
+        while (!sideBar && tries < 30) {
+            sideBar = getSideBar();
+            await wait(100);
+
+            tries++;
+        }
+
+        scrollToActiveModuleItem();
+    })();
 }
 
 /**
@@ -213,6 +228,44 @@ function isOnModulePage(itemId) {
     if (!itemId) return true;
     
     return itemId == onItem;
+}
+
+/**
+ * @returns { HTMLDivElement }
+ */
+function getSideBar() {
+    return document.querySelector(".ic-sticky-frame.has-scrollbar");
+}
+
+/**
+ * @param { Number } ms 
+ */
+function wait(ms = 1000) {
+    return new Promise(resolve => {
+        setTimeout(resolve, ms);
+    });
+}
+
+/**
+ * Perhaps make this into a checkbox option on the extension?
+ */
+const USE_SMOOTH_SCROLL = false;
+
+/**
+ * Scrolls to active module item (Moreso the parent category / topic).
+ */
+function scrollToActiveModuleItem() {
+    const activeModule = document.querySelector(".selectedModulePageItem");
+    if (!activeModule) return;
+
+    const parentId = activeModule.getAttribute("data-module-parent-list-id");
+    const parentEl = document.querySelector(`.customModuleItem[data-list-id='${parentId}'`);
+    if (!parentEl) return;
+
+    const parentBounds = parentEl.getBoundingClientRect();
+
+    const sideBar = getSideBar();
+    sideBar?.scrollTo({ top: parentBounds.top - 100, behavior: USE_SMOOTH_SCROLL ? "smooth" : "instant" });
 }
 
 // TODO: 
