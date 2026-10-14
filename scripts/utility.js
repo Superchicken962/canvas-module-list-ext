@@ -1,3 +1,17 @@
+chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+    switch(msg.subject) {
+        case "checkCanvasDetection":
+            const status = isCanvasSite();
+            reply({ success: true, canvasDetected: status });
+            break;
+
+        default:
+            reply({ success: false });
+    }
+    
+    return true;
+});
+
 /**
  * @typedef { Object } Module
  * @property { String } title

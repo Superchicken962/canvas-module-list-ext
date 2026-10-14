@@ -4,7 +4,7 @@
     "version": "0.1",
     "manifest_version": 3,
     "action": {
-        "default_popup": "credits.html"
+        "default_popup": "content.html"
     },
     "content_scripts": [
         {
