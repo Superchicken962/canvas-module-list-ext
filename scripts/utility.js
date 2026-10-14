@@ -201,9 +201,14 @@ function isCanvasSite() {
  * @param { String? } itemId
  */
 function isOnModulePage(itemId) {
-    const current = new URL(window.location.href).searchParams;
-    const onItem = current.get("module_item_id");
-    if (!onItem) return false;
+    const current = new URL(window.location.href);
+    let onItem = current.searchParams.get("module_item_id");
+
+    // If not using query parameter, try checking the path name.
+    if (!onItem) {
+        onItem = current.pathname.split("modules/items/")[1]?.split("/")?.[0];
+        if (!onItem) return false; // After checking again juts return false.
+    }
 
     if (!itemId) return true;
     
