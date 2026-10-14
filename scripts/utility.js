@@ -85,7 +85,7 @@ function addToPage(modules) {
     if (!modulesLink) return;
 
     const baseClone = modulesLink.cloneNode(true);
-
+    
     /**
      * Create link element.
      * 
@@ -96,9 +96,16 @@ function addToPage(modules) {
      */
     const createLink = (name, url, indentLevel = 0) => {
         const el = baseClone.cloneNode(true);
-        el.classList.remove("active");
+        el.classList.remove("active", "selectedModulePageItem");
         el.classList.add("customModuleItem");
         el.style.marginLeft = `${indentLevel * 15}px`;
+
+        // Highlight the page is it is the one we have open.
+        const idFromUrl = (url) ? url.split("items/")[1]?.split("/")?.[0] || "-" : "-";
+        if (isOnModulePage(idFromUrl)) {
+            // Use 'selectedModulePageItem' as our own selector if we want to target this later.
+            el.classList.add("active", "selectedModulePageItem");
+        }
 
         el.textContent = name;
         el.href = url ?? "#";
@@ -109,9 +116,13 @@ function addToPage(modules) {
     // Keep track of the 'last module' element so we can add on as we go down the list.
     let lastModule = modulesLink;
 
-    for (const mod of modules) {
+    for (let i = 0; i < modules.length; i++) {
+        const mod = modules[i];
+
         const modEl = createLink(mod.title, null, 1);
         modEl.style.fontWeight = "bold";
+        modEl.setAttribute("data-list-id", i);
+        
         // Append to last module, then set this one as the last.
         lastModule.after(modEl);
         lastModule = modEl;
@@ -122,6 +133,8 @@ function addToPage(modules) {
             if (!item.subHeader) indentAt = 2;
             
             const itemEl = createLink(item.title, item.url, indentAt);
+            // Set id of the 'module parent', so we can find it's root parent if needed.
+            itemEl.setAttribute("data-module-parent-list-id", i);
             lastModule.after(itemEl);
             lastModule = itemEl;
 
@@ -182,6 +195,23 @@ function isCanvasSite() {
     return !!localStorage.getItem("canvas_host");
 }
 
+/**
+ * Check if the user is a on any module/item page. If an item id is provided, checks for that item specifically.
+ * 
+ * @param { String? } itemId
+ */
+function isOnModulePage(itemId) {
+    const current = new URL(window.location.href).searchParams;
+    const onItem = current.get("module_item_id");
+    if (!onItem) return false;
+
+    if (!itemId) return true;
+    
+    return itemId == onItem;
+}
+
 // TODO: 
 // - Check for any course updates when visiting course page - right now it probably will just keep current data.
 // - Perhaps make module sections collapsable - click the heading to toggle collapse. Canvas already uses localStorage for storing it's collapsible, so maybe it could tie into that?
+// - Perhaps do the same for assignments section
+// - Add 'inclusion' and 'exclusion' lists for if canvas site is not detected, or if it is wrong - user can add site to be detected / not detected.
