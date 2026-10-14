@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" integrity="sha512-QeR2VH+lsBE5LSAe1Q5EnTBbe7XTBubt8dG93Y7gidSgdMCr8nVqKcfKAMyN96SV8KDbZVTDXChatu5G2KQGzg==" crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
 <body>
-    <div>
+    <div class="main">
         <h2>Canvas Module List</h2>
         <div class="links">
             <a class="link active" href="/">Information</a>
@@ -16,9 +16,17 @@
             <a class="link" href="/get" target="_blank">Get <i class="fa fa-external-link fa-xs"></i></a>
         </div>
 
+        <p>An extension for Canvas to show modules on the side navigation panel.</p>
+
+        <h3>How It Works</h3>
         <p>
-            Quite simple - just scrapes modules for each course and then displays it on the side panel where it should be.
+            It is quite simple, it scrapes modules for each course and then displays it on the side panel where it should be.
+            At first, it will force redirect you to the modules page (if you are not here already) but this is just so it can collect the data.
+            It may also do this when data gets updated.
         </p>
+
+        <h3>But Why?</h3>
+
         <p>
             I got annoyed of canvas not having this feature by default (how silly??) and so I ventured out to add it myself.
         </p>

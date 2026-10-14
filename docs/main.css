@@ -45,3 +45,7 @@ h2 {
 hr {
     border: 1px solid rgb(50, 50, 50);
 }
+
+.main {
+    max-width: 1000px;
+}
