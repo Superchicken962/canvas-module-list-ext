@@ -57,7 +57,15 @@ const canvasStatus = {
         `;
 
         const exclusionListBtn = el.querySelector(".exclusionListBtn");
-        exclusionListBtn.addEventListener("click", () => {
+        exclusionListBtn.addEventListener("click", async() => {
+            await askExtension("addToCanvasExclusion");
+
+            el.innerHTML = `
+                <h4>${statusIcon("good").outerHTML} Now Excluding Website</h4>
+
+                <p><a class="link">Refresh the page to see changes</a></p>
+            `;
+            el.querySelector(".link").onclick = reloadPage;
         });
     },
 
@@ -70,9 +78,21 @@ const canvasStatus = {
         `;
     
         const inclusionListBtn = el.querySelector(".inclusionListBtn");
-        inclusionListBtn.addEventListener("click", () => {
+        inclusionListBtn.addEventListener("click", async() => {
+            await askExtension("addToCanvasInclusion");
+
+            el.innerHTML = `
+                <h4>${statusIcon("good").outerHTML} Now Including Website</h4>
+
+                <p><a class="link">Refresh the page to see changes</a></p>
+            `;
+            el.querySelector(".link").onclick = reloadPage;
         });
     }
+}
+
+function reloadPage() {
+    askExtension("reloadPage");
 }
 
 /**

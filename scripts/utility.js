@@ -5,6 +5,23 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
             reply({ success: true, canvasDetected: status });
             break;
 
+        case "addToCanvasInclusion":
+            localStorage.removeItem("cml:isCanvas:excluded");
+            localStorage.setItem("cml:isCanvas:included", true);
+            reply({ success: true });
+            break;
+
+        case "addToCanvasExclusion":
+            localStorage.removeItem("cml:isCanvas:included");
+            localStorage.setItem("cml:isCanvas:excluded", true);
+            reply({ success: true });
+            break;
+
+        case "reloadPage":
+            window.location.reload();
+            reply({ success: true });
+            break;
+
         default:
             reply({ success: false });
     }
@@ -221,7 +238,14 @@ function saveModulesForCourse(courseId, modules) {
  * @returns { Boolean }
  */
 function isCanvasSite() {
-    return !!localStorage.getItem("canvas_host");
+    return !!(
+        localStorage.getItem("canvas_host") ||
+        // Is a canvas site if marked as included.
+        localStorage.getItem("cml:isCanvas:included")
+    ) && (
+        // Is not a canvas site if marked as excluded.
+        !localStorage.getItem("cml:isCanvas:excluded")
+    );
 }
 
 /**

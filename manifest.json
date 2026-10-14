@@ -18,5 +18,11 @@
         "32": "assets/icon32.png",
         "48": "assets/icon48.png",
         "128": "assets/icon128.png"
-    }
+    },
+    "web_accessible_resources": [
+        {
+            "matches": ["<all_urls>"],
+            "resources": ["fontawesome/css/all.min.css", "fontawesome/webfonts/*"]
+        }
+    ]
 }
