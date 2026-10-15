@@ -18,7 +18,9 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
             break;
 
         case "reloadPage":
-            window.location.reload();
+            setTimeout(() => {
+                window.location.reload();
+            }, 50);
             reply({ success: true });
             break;
 
