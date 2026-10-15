@@ -14,8 +14,17 @@ function initModules(forceRedirect = true) {
     const courseModulesPath = `/courses/${courseId}/modules`;
     const onModulesPage = (pathname === courseModulesPath);
 
+    // Scrape & save modules to localStorage.
+    const scrapeAndSave = () => {
+        const scrapedModules = scrapeCourseModules();
+        saveModulesForCourse(courseId, scrapedModules);
+        return scrapedModules;
+    }
+
+    // If on modules page, update them again to keep them as up to date as possible.
     if (modules && modules.length > 0) {
         addToPage(modules);
+        if (onModulesPage) scrapeAndSave();
         return;
     }
 
@@ -27,8 +36,7 @@ function initModules(forceRedirect = true) {
     }
 
     // Scrape & save modules to localStorage.
-    const scrapedModules = scrapeCourseModules();
-    saveModulesForCourse(courseId, scrapedModules);
+    const scrapedModules = scrapeAndSave();
 
     // Check if we were redirected, and if so, redirect back.
     const redirectedVal = url.searchParams.get("scrapeModulesReturn");
