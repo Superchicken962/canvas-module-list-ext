@@ -14,13 +14,14 @@ function initModules(forceRedirect = true) {
     const courseModulesPath = `/courses/${courseId}/modules`;
     const onModulesPage = (pathname === courseModulesPath);
 
-    if (modules.length > 0) {
+    if (modules && modules.length > 0) {
         addToPage(modules);
         return;
     }
 
     // If modules are not loaded, and not on the modules page, redirect to scrape them. Add redirect path to query variable.
-    if (modules.length === 0 && !onModulesPage && forceRedirect) {
+    // TODO: Add check for last updated so it update every so often.
+    if (!modules && !onModulesPage && forceRedirect) {
         window.location.href = `${courseModulesPath}?scrapeModulesReturn=${pathname}`;
         return;
     }

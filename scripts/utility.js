@@ -206,16 +206,16 @@ function removeModuleItems() {
  * Get course modules for a given course. Searches localStorage, if not found, scrapes them. Must be on modules page to scrape!
  * 
  * @param { String } courseId 
- * @returns { Module[] }
+ * @returns { Module[] | null } Array of modules, or null if it has not been added.
  */
 function getModulesForCourse(courseId) {
     try {
         const saved = JSON.parse(localStorage.getItem("courseModules"));
-        if (!saved) return [];
+        if (!saved) return null;
 
-        return saved[courseId] || [];
+        return saved[courseId] || null;
     } catch {
-        return [];
+        return null;
     }
 }
 

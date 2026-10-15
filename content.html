@@ -20,12 +20,17 @@
         height: 20px;
         color: white;
         border-radius: 50%;
+        background-color: grey;
     }
     .statusIcon.bad {
         background-color: red;
     }
     .statusIcon.good {
         background-color: green;
+    }
+    .statusIcon.neutral {
+        background-color: yellow;
+        color: black;
     }
 
     a.link {
@@ -42,7 +47,9 @@
     <h2>Canvas Module List</h2>
 
     <div class="main">
-        <div class="canvasDetection"></div>
+        <div class="canvasDetection">
+            <h4><span class="statusIcon"><i class="fa-solid fa-minus"></i></span> Go to Canvas first</h4>
+        </div>
     </div>
 
     <h4>Created by Mark Gurney</h4>
