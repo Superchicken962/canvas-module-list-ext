@@ -93,6 +93,7 @@ const canvasStatus = {
 
 function reloadPage() {
     askExtension("reloadPage");
+    showCanvasDetection();
 }
 
 /**

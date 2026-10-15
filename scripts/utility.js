@@ -242,6 +242,7 @@ function saveModulesForCourse(courseId, modules) {
 function isCanvasSite() {
     return !!(
         localStorage.getItem("canvas_host") ||
+        !!(localStorage.getItem("DASHBOARD_COURSES") && localStorage.getItem("COURSE_IDS")) ||
         // Is a canvas site if marked as included.
         localStorage.getItem("cml:isCanvas:included")
     ) && (
