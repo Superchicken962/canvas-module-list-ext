@@ -49,11 +49,12 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
 /**
  * Scrape modules from list on course modules page. Must be done from modules page.
  * 
+ * @param { HTMLElement? } doc - Optional override of document - use if not scraping the current page.
  * @returns { Module[] }
  */
-function scrapeCourseModules() {
+function scrapeCourseModules(doc) {
     const modules = {};
-    const moduleEls = document.querySelectorAll(".context_module");
+    const moduleEls = (doc ?? document).querySelectorAll(".context_module");
 
     for (let i = 0; i < moduleEls.length; i++) {
         const module = moduleEls[i];
@@ -145,6 +146,9 @@ function addToPage(modules) {
 
         return el;
     }
+
+    // Ensure we remove existing items first.
+    removeModuleItems();
 
     // Keep track of the 'last module' element so we can add on as we go down the list.
     let lastModule = modulesLink;
@@ -292,10 +296,15 @@ function wait(ms = 1000) {
  */
 const USE_SMOOTH_SCROLL = false;
 
+let hasScrolledToActive = false;
+
 /**
  * Scrolls to active module item (Moreso the parent category / topic).
  */
 function scrollToActiveModuleItem() {
+    // If we have already scrolled, don't do it again as it may mess it up.
+    if (hasScrolledToActive) return;
+
     const activeModule = document.querySelector(".selectedModulePageItem");
     if (!activeModule) return;
 
@@ -307,10 +316,24 @@ function scrollToActiveModuleItem() {
 
     const sideBar = getSideBar();
     sideBar?.scrollTo({ top: parentBounds.top - 100, behavior: USE_SMOOTH_SCROLL ? "smooth" : "instant" });
+    hasScrolledToActive = true;
+}
+
+/**
+ * GET a page document from a given url.
+ * 
+ * @param { String } url 
+ * @returns { Promise<HTMLElement> }
+ */
+async function getPageDocument(url) {
+    const body = await (await fetch(url)).text();
+
+    const docEl = document.createElement("html");
+    docEl.innerHTML = body;
+    return docEl;
 }
 
 // TODO: 
-// - Check for any course updates when visiting course page - right now it probably will just keep current data.
 // - Perhaps make module sections collapsable - click the heading to toggle collapse. Canvas already uses localStorage for storing it's collapsible, so maybe it could tie into that?
 // - Perhaps do the same for assignments section
 // - Add 'inclusion' and 'exclusion' lists for if canvas site is not detected, or if it is wrong - user can add site to be detected / not detected.

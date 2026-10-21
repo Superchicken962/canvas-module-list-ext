@@ -1,4 +1,4 @@
-function initModules(forceRedirect = true) {
+async function initModules(forceRedirect = true) {
     if (!isCanvasSite()) return;
     
     const url = new URL(window.location.href);
@@ -14,39 +14,30 @@ function initModules(forceRedirect = true) {
     const courseModulesPath = `/courses/${courseId}/modules`;
     const onModulesPage = (pathname === courseModulesPath);
 
+    // If there are existing modules, add them now before checking further (minimise delay).
+    if (modules && modules.length > 0) {
+        addToPage(modules);
+    }
+
+    /**
+     * For non-module page, this will be overwritten to be the course module document. Otherwise, the scrapeCourseModules function will handle using default.
+     */
+    let doc = null;
+
     // Scrape & save modules to localStorage.
     const scrapeAndSave = () => {
-        const scrapedModules = scrapeCourseModules();
+        const scrapedModules = scrapeCourseModules(doc);
         saveModulesForCourse(courseId, scrapedModules);
         return scrapedModules;
     }
 
-    // If on modules page, update them again to keep them as up to date as possible.
-    if (modules && modules.length > 0) {
-        addToPage(modules);
-        if (onModulesPage) scrapeAndSave();
-        return;
-    }
-
-    // If modules are not loaded, and not on the modules page, redirect to scrape them. Add redirect path to query variable.
-    // TODO: Add check for last updated so it update every so often.
-    if (!modules && !onModulesPage && forceRedirect) {
-        window.location.href = `${courseModulesPath}?scrapeModulesReturn=${pathname}`;
-        return;
+    // If not on modules page, send a GET request and get the document to scrape from - means we don't need to redirect.
+    if (!onModulesPage) {
+        doc = await getPageDocument(courseModulesPath);
     }
 
     // Scrape & save modules to localStorage.
     const scrapedModules = scrapeAndSave();
-
-    // Check if we were redirected, and if so, redirect back.
-    const redirectedVal = url.searchParams.get("scrapeModulesReturn");
-    if (redirectedVal) {
-        url.searchParams.delete("scrapeModulesReturn");
-        url.pathname = redirectedVal;
-        window.location.href = url.href;
-        return;
-    }
-
     addToPage(scrapedModules);
 }
 
