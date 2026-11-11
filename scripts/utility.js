@@ -159,6 +159,7 @@ function addToPage(modules) {
         const modEl = createLink(mod.title, null, 1);
         modEl.style.fontWeight = "bold";
         modEl.setAttribute("data-list-id", i);
+        modEl.classList.add("moduleTopicHeader");
         
         // Append to last module, then set this one as the last.
         lastModule.after(modEl);
@@ -181,6 +182,14 @@ function addToPage(modules) {
                 itemEl.style.fontWeight = "bold";
             }
         }
+
+        modEl.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            
+            modEl.classList.toggle("expanded");
+            const children = document.querySelectorAll(`.customModuleItem[data-module-parent-list-id='${i}']`);
+            children.forEach(c => c.classList.toggle("hidden"));
+        });
     }
 
     (async() => {
@@ -331,6 +340,10 @@ async function getPageDocument(url) {
     const docEl = document.createElement("html");
     docEl.innerHTML = body;
     return docEl;
+}
+
+function getUserId() {
+    return ENV?.current_user_id;
 }
 
 // TODO: 

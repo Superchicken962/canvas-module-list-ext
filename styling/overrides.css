@@ -1,4 +1,3 @@
-
 @media (min-width: 768px) {
     body.canvasPage.course-menu-expanded:not(.ic-no-flex-layout):not(.embedded):not(.is-inside-submission-frame):not(.content-only) .ic-Layout-columns {
         margin-left: 230px !important;
@@ -27,4 +26,25 @@
     body.canvasPage .ic-app-course-menu {
         width: 410px !important;
     }
+}
+
+.moduleTopicHeader {
+    display: block;
+}
+.moduleTopicHeader::before {
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+
+    font-family: "Font Awesome 7 Free";
+    content: "\f0d7";
+    margin-right: 10px;
+}
+.moduleTopicHeader.expanded::before {
+    font-family: "Font Awesome 7 Free";
+    content: "\f0da";
+}
+
+.customModuleItem.hidden {
+    display: none !important;
 }
