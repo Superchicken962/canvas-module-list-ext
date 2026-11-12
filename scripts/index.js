@@ -1,4 +1,4 @@
-async function initModules(forceRedirect = true) {
+async function initModules() {
     if (!isCanvasSite()) return;
     
     const url = new URL(window.location.href);

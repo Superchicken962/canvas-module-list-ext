@@ -41,6 +41,7 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
 /**
  * @typedef { Object } ModuleItem
  * @property { String } title
+ * @property { String } id
  * @property { Boolean } isSubHeader - Is this item a sub header?
  * @property { String? } subHeader - Sub header this item is under, if under any.
  * @property { String? } url - URL to item page (if it has one).
@@ -62,11 +63,14 @@ function scrapeCourseModules(doc) {
         const moduleName = module.getAttribute("aria-label");
         if (!moduleName) continue;
 
+        const moduleId = module.getAttribute("data-module-id");
+
         const items = module.querySelectorAll(".context_module_items li");
         let lastSubHeader = null;
 
         const modData = {
             title: moduleName,
+            id: moduleId,
             items: [],
             order: i
         }
@@ -183,12 +187,23 @@ function addToPage(modules) {
             }
         }
 
-        modEl.addEventListener("click", (ev) => {
-            ev.preventDefault();
-            
+        const toggleExpand = () => {
             modEl.classList.toggle("expanded");
             const children = document.querySelectorAll(`.customModuleItem[data-module-parent-list-id='${i}']`);
             children.forEach(c => c.classList.toggle("hidden"));
+            
+            return modEl.classList.contains("expanded");
+        }
+
+        const expanded = isModuleExpanded(mod.id, true);
+        if (expanded) modEl.classList.add("expanded");
+
+        toggleExpand();
+
+        modEl.addEventListener("click", (ev) => {
+            ev.preventDefault();
+            const nowExpanded = toggleExpand();
+            setModuleExpandedState(mod.id, nowExpanded, true);
         });
     }
 
@@ -343,7 +358,55 @@ async function getPageDocument(url) {
 }
 
 function getUserId() {
-    return ENV?.current_user_id;
+    // TODO: Communicate with another file that can access the ENV global var.
+    return null;
+}
+
+/**
+ * Check if a module is expanded on the list.
+ * 
+ * @param { String } id
+ * @param { Boolean } shareModulePageState - Attach localStorage value to the expanded state of topics on actual modules page?
+ * @returns { Boolean }
+ */
+function isModuleExpanded(id, shareModulePageState = false) {
+    if (shareModulePageState) {
+        return getCanvasModuleExpandedState(localStorage.getItem("CURRENT_COURSE_ID"), getUserId(), id) == "true";
+    }
+
+    // TODO: Normal storage.
+
+    return false;
+}
+
+/**
+ * 
+ * @param { String } moduleId 
+ * @param { "true"|"false" } state
+ * @param { Boolean } shareModulePageState - Attach localStorage value to the expanded state of topics on actual modules page?
+ */
+function setModuleExpandedState(moduleId, state, shareModulePageState = false) {
+    const courseId = localStorage.getItem("CURRENT_COURSE_ID");
+
+    if (shareModulePageState) {
+        localStorage.setItem(`"course"|"${courseId}"|"user"|"${getUserId()}"|"ag"|"${moduleId}"|"expanded"`, state);
+        
+        // Also allow it to set the normal storage, in case the user disables this option then it can fallback.
+    }
+
+    // TODO: Normal storage.
+}
+
+/**
+ * 
+ * @param { String } courseId 
+ * @param { String } userId 
+ * @param { String } moduleId 
+ * @returns { "true"|"false" }
+ */
+function getCanvasModuleExpandedState(courseId, userId, moduleId) {
+    if (!courseId) return "false";
+    return localStorage.getItem(`"course"|"${courseId}"|"user"|"${userId}"|"ag"|"${moduleId}"|"expanded"`)?.toLowerCase() || "false";
 }
 
 // TODO: 
