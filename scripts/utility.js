@@ -476,6 +476,33 @@ function initModulePageListeners() {
     }
 }
 
+/**
+ * Synchronise states between extension list & canvas module page - favours / prioritises the canvas page.
+ */
+async function syncSharedStates() {
+    if (!usingSharedModuleState()) return;
+
+    // ENV should be most up to date, so ensure we fetch it each time.
+    const ENV = await getWindowVariable("ENV");
+
+    const collapsedLength = ENV.COLLAPSED_MODULES.length;
+    const expandedLength = ENV.EXPANDED_MODULES.length;
+
+    for (let i = 0; i < Math.max(collapsedLength, expandedLength); i++) {
+        if (i < ENV.COLLAPSED_MODULES.length) {
+            // Use false for shared state as we are only updating the extension data.
+            setModuleExpandedState(ENV.COLLAPSED_MODULES[i], false, false);
+        }
+
+        if (i < ENV.EXPANDED_MODULES.length) {
+            setModuleExpandedState(ENV.EXPANDED_MODULES[i], true, false);
+        }
+    }
+
+    // Todo?: Modules not interacted with yet are not included in either ENV array, so perhaps we should 'reset' all in localStorage to set as expanded, then as necessary set the few that are not.
+}
+syncSharedStates();
+
 // TODO: 
 // - Perhaps make module sections collapsable - click the heading to toggle collapse. Canvas already uses localStorage for storing it's collapsible, so maybe it could tie into that?
 // - Perhaps do the same for assignments section
