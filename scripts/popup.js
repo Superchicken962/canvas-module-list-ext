@@ -132,12 +132,17 @@ function addConfigInput(opts = {}) {
     inp.className = "configInput";
     inp.type = opts.type ?? "text";
 
-    const existingVal = localStorage.getItem(opts.localStorageKey);
-    if (existingVal && opts.type !== "checkbox") inp.value = existingVal;
-    else inp.checked = (existingVal == "true");
+    askExtension("getLocalStorageItem", { key: opts.localStorageKey }).then(resp => {
+        const existingVal = resp.value;
+
+        if (existingVal && opts.type !== "checkbox") inp.value = existingVal;
+        else inp.checked = (existingVal == "true");
+    });
 
     inp.addEventListener("input", () => {
-        localStorage.setItem(opts.localStorageKey, (opts.type === "checkbox" ? inp.checked : inp.value)); 
+        askExtension("setLocalStorageItem", { key: opts.localStorageKey, value: (opts.type === "checkbox" ? inp.checked : inp.value) }).then(resp => {
+            console.log(resp);
+        });
     });
  
     const lbl = document.createElement("label");

@@ -29,6 +29,21 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
             reply({ success: true });
             break;
 
+        case "getLocalStorageItem":
+            reply({ success: true, value: localStorage.getItem(msg.key) });
+            break;
+
+        case "setLocalStorageItem":
+            console.log("setLocalStorageItem", msg);
+            if (msg.key == null || msg.value == null) {
+                reply({ success: false, message: "Must include key and value property to set!" });
+                break;
+            }
+
+            localStorage.setItem(msg.key, msg.value);
+            reply({ success: true });
+            break;
+
         default:
             reply({ success: false });
     }
