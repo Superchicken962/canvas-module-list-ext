@@ -208,7 +208,7 @@ function addToPage(modules) {
         modEl.addEventListener("click", (ev) => {
             ev.preventDefault();
             const nowExpanded = toggleExpand();
-            setModuleExpandedState(mod.id, nowExpanded, true); // TODO: Replace true with localStorage toggle for using shared state.
+            setModuleExpandedState(mod.id, nowExpanded, usingSharedModuleState());
         });
     }
 
@@ -443,7 +443,39 @@ function setModuleExpandedForCanvas(courseId, moduleId, expanded) {
     });
 }
 
+/**
+ * Check if using shared state between module page (canvas page) and the module list (from extension).
+ */
+function usingSharedModuleState() {
+    return localStorage.getItem("cml:usingSharedModuleState") == "true";
+}
+/**
+ * Set shared state enabled/disabled.
+ * TODO: Add checkbox on popup / content to toggle this.
+ * 
+ * @param { "true"|"false" } state - Sharing states? 
+ */
+function setUsingSharedModuleState(state = "false") {
+    localStorage.setItem("cml:usingSharedModuleState", state);
+}
+
+/**
+ * Initialise click listeners on modules on the modules page.
+ */
+function initModulePageListeners() {
+    for (const collapseBtn of document.querySelectorAll(".context_module .ig-header-title")) {
+        collapseBtn.addEventListener("click", () => {
+            if (!usingSharedModuleState()) return;
+
+            const expanded = collapseBtn.classList.contains("expand_module_link");
+            const moduleId = (collapseBtn.getAttribute("href") || "").split("modules/")[1]?.split("/")[0]
+
+            // Use false to shared state just so we don't circle back and set the canvas state, since it is already set by this being clicked.
+            setModuleExpandedState(moduleId, expanded, false);
+        });
+    }
+}
+
 // TODO: 
 // - Perhaps make module sections collapsable - click the heading to toggle collapse. Canvas already uses localStorage for storing it's collapsible, so maybe it could tie into that?
 // - Perhaps do the same for assignments section
-// - Add 'inclusion' and 'exclusion' lists for if canvas site is not detected, or if it is wrong - user can add site to be detected / not detected.

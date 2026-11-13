@@ -14,6 +14,9 @@ async function initModules() {
     const courseModulesPath = `/courses/${courseId}/modules`;
     const onModulesPage = (pathname === courseModulesPath);
 
+    // If on module pages, add listeners specific to it.
+    if (onModulesPage) initModulePageListeners();
+
     // If there are existing modules, add them now before checking further (minimise delay).
     if (modules && modules.length > 0) {
         addToPage(modules);
