@@ -34,9 +34,13 @@ listenForMessage("GET_WINDOW_VAR", (data, sender, reply) => {
 listenForMessage("toggleModuleCollapse", (data, sender, reply) => {
     chrome.scripting.executeScript({
         target: { tabId: sender.tab.id },
-        func: (moduleId) => {
-
-        }
+        func: (courseId, moduleId, state) => {
+            // Use same method that canvas uses to set the state.
+            $.ajaxJSON(`/courses/${courseId}/modules/${moduleId}/collapse`, "POST", { collapse: !!state ? 0 : 1 });
+            return;
+        },
+        args: [data.courseId, data.moduleId, data.state || data.expanded],
+        world: "MAIN"
     }).then(() => reply({ success: true }))
     .catch(() => reply({ success: false }));
 });

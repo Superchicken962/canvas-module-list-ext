@@ -411,6 +411,7 @@ function setModuleExpandedState(moduleId, state, shareModulePageState = false) {
     if (shareModulePageState) {
         // TODO - it will still store in normal storage, but this will determine if it should sync with modules list.
         // There shouldn't be a need to check when getting, as the two *should* syncronise when setting - clicking either will set it. 
+        setModuleExpandedForCanvas(courseId, moduleId, state == "true");
     }
 
     localStorage.setItem(`cml:moduleExpandState::c${courseId}:m${moduleId}`, state);
@@ -424,6 +425,22 @@ function setModuleExpandedState(moduleId, state, shareModulePageState = false) {
  */
 function getCanvasModuleExpandedState(courseId, moduleId) {
     return localStorage.getItem(`cml:moduleExpandState::c${courseId}:m${moduleId}`);
+}
+
+/**
+ * Sets the module expanded state for the module list on canvas - not the side list, but the main page for canvas.
+ * 
+ * @param { String } courseId
+ * @param { String } moduleId
+ * @param { Boolean } expanded - Set to expanded?
+ * @returns { Promise<Boolean> } Success?
+ */
+function setModuleExpandedForCanvas(courseId, moduleId, expanded) {
+    return new Promise((resolve) => {
+        chrome.runtime.sendMessage({ event: "toggleModuleCollapse", courseId, moduleId, expanded }, (data) => {
+            resolve(data.success);
+        });
+    });
 }
 
 // TODO: 
