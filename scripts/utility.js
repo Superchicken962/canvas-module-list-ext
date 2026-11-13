@@ -1,3 +1,8 @@
+let env;
+getWindowVariable("ENV").then(val => {
+    env = val;
+});
+
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {
     switch(msg.subject) {
         case "checkCanvasDetection":
@@ -164,6 +169,8 @@ function addToPage(modules) {
         modEl.style.fontWeight = "bold";
         modEl.setAttribute("data-list-id", i);
         modEl.classList.add("moduleTopicHeader");
+        // Default view is as expanded, so include this class.
+        modEl.classList.add("expanded");
         
         // Append to last module, then set this one as the last.
         lastModule.after(modEl);
@@ -195,15 +202,13 @@ function addToPage(modules) {
             return modEl.classList.contains("expanded");
         }
 
-        const expanded = isModuleExpanded(mod.id, true);
-        if (expanded) modEl.classList.add("expanded");
-
-        toggleExpand();
+        const expanded = isModuleExpanded(mod.id);
+        if (!expanded) toggleExpand();
 
         modEl.addEventListener("click", (ev) => {
             ev.preventDefault();
             const nowExpanded = toggleExpand();
-            setModuleExpandedState(mod.id, nowExpanded, true);
+            setModuleExpandedState(mod.id, nowExpanded, true); // TODO: Replace true with localStorage toggle for using shared state.
         });
     }
 
@@ -357,26 +362,41 @@ async function getPageDocument(url) {
     return docEl;
 }
 
+/**
+ * Get window variable from page.
+ * 
+ * @param { String } variable - Variable/property name to get from window context.
+ * @returns { Promise<Object> }
+ */
+function getWindowVariable(variable) {
+    return new Promise((resolve) => {
+        chrome.runtime.sendMessage({ event: "GET_WINDOW_VAR", variable }, (data) => {
+            resolve(data?.[variable] || null);
+        });
+    });
+}
+
 function getUserId() {
-    // TODO: Communicate with another file that can access the ENV global var.
-    return null;
+    const userId = env?.current_user_id ?? null;
+
+    // If no user id at the moment, try getting the cached user id (if it has been set).
+    if (!userId) {
+        return localStorage.getItem("cml:cachedUserId") ?? null;
+    }
+
+    // Save user id to cache for next time.
+    localStorage.setItem("cml:cachedUserId", userId);
+    return userId;
 }
 
 /**
  * Check if a module is expanded on the list.
  * 
  * @param { String } id
- * @param { Boolean } shareModulePageState - Attach localStorage value to the expanded state of topics on actual modules page?
  * @returns { Boolean }
  */
-function isModuleExpanded(id, shareModulePageState = false) {
-    if (shareModulePageState) {
-        return getCanvasModuleExpandedState(localStorage.getItem("CURRENT_COURSE_ID"), getUserId(), id) == "true";
-    }
-
-    // TODO: Normal storage.
-
-    return false;
+function isModuleExpanded(id) {
+    return getCanvasModuleExpandedState(localStorage.getItem("CURRENT_COURSE_ID"), id) == "true";
 }
 
 /**
@@ -389,24 +409,21 @@ function setModuleExpandedState(moduleId, state, shareModulePageState = false) {
     const courseId = localStorage.getItem("CURRENT_COURSE_ID");
 
     if (shareModulePageState) {
-        localStorage.setItem(`"course"|"${courseId}"|"user"|"${getUserId()}"|"ag"|"${moduleId}"|"expanded"`, state);
-        
-        // Also allow it to set the normal storage, in case the user disables this option then it can fallback.
+        // TODO - it will still store in normal storage, but this will determine if it should sync with modules list.
+        // There shouldn't be a need to check when getting, as the two *should* syncronise when setting - clicking either will set it. 
     }
 
-    // TODO: Normal storage.
+    localStorage.setItem(`cml:moduleExpandState::c${courseId}:m${moduleId}`, state);
 }
 
 /**
  * 
  * @param { String } courseId 
- * @param { String } userId 
  * @param { String } moduleId 
  * @returns { "true"|"false" }
  */
-function getCanvasModuleExpandedState(courseId, userId, moduleId) {
-    if (!courseId) return "false";
-    return localStorage.getItem(`"course"|"${courseId}"|"user"|"${userId}"|"ag"|"${moduleId}"|"expanded"`)?.toLowerCase() || "false";
+function getCanvasModuleExpandedState(courseId, moduleId) {
+    return localStorage.getItem(`cml:moduleExpandState::c${courseId}:m${moduleId}`);
 }
 
 // TODO: 

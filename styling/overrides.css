@@ -37,12 +37,12 @@
     -webkit-font-smoothing: antialiased;
 
     font-family: "Font Awesome 7 Free";
-    content: "\f0d7";
+    content: "\f0da";
     margin-right: 10px;
 }
 .moduleTopicHeader.expanded::before {
     font-family: "Font Awesome 7 Free";
-    content: "\f0da";
+    content: "\f0d7";
 }
 
 .customModuleItem.hidden {
