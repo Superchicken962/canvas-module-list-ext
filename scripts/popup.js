@@ -96,6 +96,8 @@ function reloadPage() {
     showCanvasDetection();
 }
 
+const configSection = document.querySelector(".config");
+
 /**
  * Shows canvas detection status and give options.
  */
@@ -104,5 +106,56 @@ async function showCanvasDetection() {
 
     const func = (detected) ? "detected" : "undetected";
     canvasStatus[func]();
+
+    // Only show configuration if on canvas site.
+    if (detected) configSection.classList.remove("hidden");
+    else configSection.classList.add("hidden");
 }
 showCanvasDetection();
+
+
+/**
+ * Configuration section
+ */
+
+/**
+ * @param { Object } opts 
+ * @param { "text"|"checkbox" } opts.type 
+ * @param { String } opts.label 
+ * @param { String } opts.id 
+ * @param { String } opts.description
+ * @param { String } opts.localStorageKey - Key to read & save value in localStorage.
+ */
+function addConfigInput(opts = {}) {
+    const inp = document.createElement("input");
+    if (opts.id) inp.id = opts.id;
+    inp.className = "configInput";
+    inp.type = opts.type ?? "text";
+
+    const existingVal = localStorage.getItem(opts.localStorageKey);
+    if (existingVal && opts.type !== "checkbox") inp.value = existingVal;
+    else inp.checked = (existingVal == "true");
+
+    inp.addEventListener("input", () => {
+        localStorage.setItem(opts.localStorageKey, (opts.type === "checkbox" ? inp.checked : inp.value)); 
+    });
+ 
+    const lbl = document.createElement("label");
+    lbl.setAttribute("for", opts.id);
+    if (opts.label) lbl.textContent = opts.label;
+
+    const description = document.createElement("p");
+    description.className = "description";
+    description.textContent = opts.description ?? "";
+
+    const container = document.createElement("div");
+    container.className = "configOption";
+
+    container.appendChild(lbl);
+    container.appendChild(inp);
+    container.appendChild(description);
+
+    configSection.append(container);
+}
+
+addConfigInput({ id: "useSharedState", label: "Use Shared State", type: "checkbox", localStorageKey: "cml:usingSharedModuleState", description: "Sync expanded status between side list and modules page?" });

@@ -41,6 +41,30 @@
         color: rgb(18, 105, 185);
         cursor: pointer;
     }
+
+    .config {
+        display: block;
+    }
+    .config .configOption {
+        display: block;
+    }
+    .config .configOption label:not(:empty) {
+        margin-right: 5px;
+    }
+    .config .configOption input[type=checkbox] {
+        vertical-align: middle;
+    }
+    .config .configOption .description {
+        display: block;
+        margin: 0;
+        border-left: 2px solid grey;
+        padding-left: 5px;
+        color: grey;
+    }
+
+    .hidden {
+        display: none !important;
+    }
 </style>
 
 <div>
@@ -49,6 +73,11 @@
     <div class="main">
         <div class="canvasDetection">
             <h4><span class="statusIcon"><i class="fa-solid fa-minus"></i></span> Go to Canvas first</h4>
+        </div>
+
+        <div class="config hidden">
+            <hr>
+            <h3>Configuration</h3>
         </div>
     </div>
 

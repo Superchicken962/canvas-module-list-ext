@@ -485,10 +485,11 @@ async function syncSharedStates() {
     // ENV should be most up to date, so ensure we fetch it each time.
     const ENV = await getWindowVariable("ENV");
 
-    const collapsedLength = ENV.COLLAPSED_MODULES.length;
-    const expandedLength = ENV.EXPANDED_MODULES.length;
 
-    for (let i = 0; i < Math.max(collapsedLength, expandedLength); i++) {
+    const collapsedLength = ENV.COLLAPSED_MODULES?.length;
+    const expandedLength = ENV.EXPANDED_MODULES?.length;
+
+    for (let i = 0; i < Math.max(0, collapsedLength, expandedLength); i++) {
         if (i < ENV.COLLAPSED_MODULES.length) {
             // Use false for shared state as we are only updating the extension data.
             setModuleExpandedState(ENV.COLLAPSED_MODULES[i], false, false);
