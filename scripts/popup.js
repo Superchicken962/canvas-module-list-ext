@@ -17,6 +17,32 @@ async function askExtension(subject, data) {
 }
 
 /**
+ * localStorage of content scripts - where data is stored.
+ */
+const contentLocalStorage = {
+    /**
+     * @param { String } key 
+     * @returns { Promise<any> } 
+     */
+    get: (key) => {
+        return new Promise(resolve => {
+            askExtension("getLocalStorageItem", { key }).then(resp => resolve(resp.value));
+        })
+    },
+
+    /**
+     * @param { String } key 
+     * @param { any } value
+     * @returns { Promise<void> } 
+     */
+    set: (key, value) => {
+        return new Promise(resolve => {
+            askExtension("setLocalStorageItem", { key, value }).then(() => resolve);
+        });
+    }
+}
+
+/**
  * @param { "good" | "bad" } status 
  * @returns { HTMLSpanElement } 
  */
@@ -126,23 +152,19 @@ showCanvasDetection();
  * @param { String } opts.description
  * @param { String } opts.localStorageKey - Key to read & save value in localStorage.
  */
-function addConfigInput(opts = {}) {
+async function addConfigInput(opts = {}) {
     const inp = document.createElement("input");
     if (opts.id) inp.id = opts.id;
     inp.className = "configInput";
     inp.type = opts.type ?? "text";
 
-    askExtension("getLocalStorageItem", { key: opts.localStorageKey }).then(resp => {
-        const existingVal = resp.value;
-
+    contentLocalStorage.get(opts.localStorageKey).then(existingVal => {
         if (existingVal && opts.type !== "checkbox") inp.value = existingVal;
         else inp.checked = (existingVal == "true");
     });
 
     inp.addEventListener("input", () => {
-        askExtension("setLocalStorageItem", { key: opts.localStorageKey, value: (opts.type === "checkbox" ? inp.checked : inp.value) }).then(resp => {
-            console.log(resp);
-        });
+        contentLocalStorage.set(opts.localStorageKey, (opts.type === "checkbox" ? inp.checked : inp.value));
     });
  
     const lbl = document.createElement("label");

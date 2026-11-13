@@ -34,7 +34,6 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
             break;
 
         case "setLocalStorageItem":
-            console.log("setLocalStorageItem", msg);
             if (msg.key == null || msg.value == null) {
                 reply({ success: false, message: "Must include key and value property to set!" });
                 break;
