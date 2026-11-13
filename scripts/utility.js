@@ -402,7 +402,7 @@ function isModuleExpanded(id) {
 /**
  * 
  * @param { String } moduleId 
- * @param { "true"|"false" } state
+ * @param { Boolean } state
  * @param { Boolean } shareModulePageState - Attach localStorage value to the expanded state of topics on actual modules page?
  */
 function setModuleExpandedState(moduleId, state, shareModulePageState = false) {
@@ -411,7 +411,7 @@ function setModuleExpandedState(moduleId, state, shareModulePageState = false) {
     if (shareModulePageState) {
         // TODO - it will still store in normal storage, but this will determine if it should sync with modules list.
         // There shouldn't be a need to check when getting, as the two *should* syncronise when setting - clicking either will set it. 
-        setModuleExpandedForCanvas(courseId, moduleId, state == "true");
+        setModuleExpandedForCanvas(courseId, moduleId, state);
     }
 
     localStorage.setItem(`cml:moduleExpandState::c${courseId}:m${moduleId}`, state);

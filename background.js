@@ -39,7 +39,7 @@ listenForMessage("toggleModuleCollapse", (data, sender, reply) => {
             $.ajaxJSON(`/courses/${courseId}/modules/${moduleId}/collapse`, "POST", { collapse: !!state ? 0 : 1 });
             return;
         },
-        args: [data.courseId, data.moduleId, data.state || data.expanded],
+        args: [data.courseId, data.moduleId, (data.state || data.expanded)],
         world: "MAIN"
     }).then(() => reply({ success: true }))
     .catch(() => reply({ success: false }));
